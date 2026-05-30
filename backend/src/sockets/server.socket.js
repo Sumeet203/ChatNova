@@ -12,7 +12,7 @@ export function initSocket(httpServer){
     console.log("Socket.io server is running");
     io.on("connection",(socket)=>{
         console.log("A user connected:",socket.id);
-    })
+    });
 };
 
 export function getIO(){
@@ -20,4 +20,4 @@ export function getIO(){
         throw new Error("Socker.io is not initialized");
     }
     return io;
-}
+};
