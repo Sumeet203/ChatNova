@@ -1,25 +1,43 @@
-import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
+import { HumanMessage, SystemMessage, AIMessage, tool, createAgent } from "langchain";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatMistralAI } from "@langchain/mistralai";
+import * as zod from "zod";
+import { searchInternet } from "./internet.service.js";
 const geminiModel = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash-lite",
   apiKey: process.env.GEMINI_API_KEY
 });
-
 const mistralModel = new ChatMistralAI({
   model : "mistral-small-latest",
   apiKey : process.env.MISTRAL_API_KEY
 })
 
+
+const searchTool =  tool(
+  searchInternet,{
+    name : "searchTool",
+    description : "Search the internet for current, recent, or up-to-date information before answering." ,
+    schema : zod.object({
+      query : zod.string().describe("The search query to look up on the internet.")
+    })
+  }
+);
+
+const agent = createAgent({
+  model : geminiModel,
+  tools : [searchTool]
+})
 export async function generateResponse(messages){
-  const response = await geminiModel.invoke(messages.map(msg =>{
+  const response = await agent.invoke({
+    messages : [new SystemMessage("You are a helpful and precise assistant for answering questions. If you don't know the answer, just say so. For questions that require current, recent, latest, real-time, or internet-based information, call the searchTool tool first and answer based on the search result."),...(messages.map(msg =>{
     if(msg.role === "user"){
       return new HumanMessage(msg.content);
     }else if(msg.role === "ai"){
       return new AIMessage(msg.content);
     }
-  }));
-  return response.text;
+  }))]
+  });
+  return response.messages[response.messages.length-1].text;
 }
 
 export async function generateChatTitle(message){

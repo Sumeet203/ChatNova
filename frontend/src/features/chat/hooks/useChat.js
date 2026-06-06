@@ -48,7 +48,8 @@ export const useChat = () => {
         dispatch(setLoading(false))
     }
 
-    async function handleOpenChat(chatId) {
+    async function handleOpenChat(chatId,chats) {
+        if(chats[chatId]?.messages.length == 0){
         const data = await getMessages(chatId);
         const {messages} = data;
         const formattedmessages = messages.map(msg=>({
@@ -59,14 +60,20 @@ export const useChat = () => {
             chatId,
             messages : formattedmessages
         }));
+        }
         dispatch(setCurrentChatId(chatId));
+    }
+
+    function handleOpenNewChat(){
+        dispatch(setCurrentChatId(null));
     }
 
     return {
         initializeSocketConnection,
         handleSendMessage,
         handleGetChats,
-        handleOpenChat
+        handleOpenChat,
+        handleOpenNewChat
     }
 
 }
