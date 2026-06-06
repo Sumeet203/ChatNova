@@ -68,12 +68,23 @@ export const useChat = () => {
         dispatch(setCurrentChatId(null));
     }
 
+    function handleDeleteChat(chatId){
+        deleteChat(chatId);
+        dispatch(setCurrentChatId(null));
+        dispatch(setChats((prevChats)=>{
+            const updatedChats = {...prevChats};
+            delete updatedChats[chatId];
+            return updatedChats;
+        }));
+    }
+
     return {
         initializeSocketConnection,
         handleSendMessage,
         handleGetChats,
         handleOpenChat,
-        handleOpenNewChat
+        handleOpenNewChat,
+        handleDeleteChat
     }
 
 }
