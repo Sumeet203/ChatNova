@@ -30,5 +30,9 @@
 html, body {
   height: 100%;
   overflow: hidden;
-  background: #07090f; /* same as your app bg */
+  background: linear-gradient(135deg, #f5f1ea 0%, #faf9f6 52%, #ece9e3 100%);
+}
+
+html.dark body {
+  background: #07090f;
 }

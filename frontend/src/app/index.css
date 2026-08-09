@@ -1,4 +1,5 @@
 @import "tailwindcss" source("../");
+@custom-variant dark (&:where(.dark, .dark *));
 
 @keyframes auth-page-in {
   from {
@@ -14,6 +15,20 @@
 
 .auth-page-in {
   animation: auth-page-in 220ms ease-out;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, #f5f1ea 0%, #faf9f6 52%, #ece9e3 100%);
+}
+
+.dark body {
+  background: #07090f;
 }
 /* .messages::-webkit-scrollbar {
   display: none;
@@ -48,4 +63,4 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #07090f; /* same as your app bg */
-} */
+} 

@@ -25,7 +25,6 @@ export async function register(req,res){
     });
     const emailVerificationToken = jwt.sign({
       email : user.email,
-
     },process.env.JWT_SECRET);
 
     await sendEmail({
@@ -432,6 +431,20 @@ export async function resendEmailVerificationLink(req,res){
   });
   res.status(200).json({
     message : "Verification email resent successfully",
+    success : true,
+  });
+}
+
+/**
+ * @route POST /api/auth/logout
+* @desc Logout user and invalidate JWT token
+ * @access Public    
+ */ 
+
+export async function logout(req,res){
+  res.clearCookie("token");
+  res.status(200).json({
+    message : "Logout successful",
     success : true,
   });
 }

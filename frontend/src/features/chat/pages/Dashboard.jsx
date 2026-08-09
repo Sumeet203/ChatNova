@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { useChat } from "../hooks/useChat";
+import { useAuth } from "../../auth/hook/useAuth";
 import "../style/chat.scss";
 
 const Dashboard = () => {
   const chat = useChat();
+  const auth = useAuth();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const [chatInput, setChatInput] = useState("");
   const [userMessage, setUserMessage] = useState("");
@@ -51,20 +55,28 @@ const handleConfirmDelete = async () => {
   setSelectedChatId(null);
   chat.handleGetChats();
 };
+
+const handleLogout = async () => {
+  const loggedOut = await auth.handleLogout();
+
+  if (loggedOut) {
+    navigate("/login", { replace: true });
+  }
+};
   return (
-    <main className="min-h-screen w-full bg-[#07090f] p-3 text-white md:p-5">
+    <main className="min-h-screen w-full bg-gradient-to-br from-stone-100 via-neutral-50 to-zinc-100 p-3 text-zinc-950 dark:bg-[#07090f] dark:bg-none dark:text-white md:p-5">
       <section className="mx-auto flex h-[calc(100vh-1.5rem)] w-full gap-4 rounded-3xl border   p-1 md:h-[calc(100vh-2.5rem)] md:gap-6 md:p-1 border-none">
-        <aside className="hidden h-full w-72 shrink-0 rounded-3xl bg-[#080b12] p-4 md:flex flex-col">
+        <aside className="hidden h-full w-72 shrink-0 rounded-3xl border border-stone-200/80 bg-gradient-to-br from-[#faf9f6] via-stone-50 to-zinc-100 p-4 shadow-xl shadow-stone-300/40 dark:border-white/10 dark:bg-[#080b12] dark:bg-none dark:shadow-black/20 md:flex flex-col">
           {/* HEADER (fixed top) */}
           <h1 className="mb-4 text-3xl font-semibold tracking-tight">
-            Perplexity
+            CodeNova
           </h1>
 
           {/* NEW CHAT (fixed under header) */}
           <button
             type="button"
             onClick={() => chat.handleOpenNewChat()}
-            className="w-full mb-3 cursor-pointer rounded-xl border border-white/60 bg-transparent px-3 py-2 text-left text-base font-medium text-white/90 transition hover:border-white hover:text-white"
+            className="w-full mb-3 cursor-pointer rounded-xl border border-zinc-300 bg-transparent px-3 py-2 text-left text-base font-medium text-zinc-700 transition hover:border-cyan-500 hover:text-zinc-950 dark:border-white/60 dark:text-white/90 dark:hover:border-white dark:hover:text-white"
           >
             <i className="fa-solid fa-plus mr-2"></i>New Chat
           </button>
@@ -74,7 +86,7 @@ const handleConfirmDelete = async () => {
             {Object.values(chats)?.map((chatItem) => (
               <div
                 key={chatItem.id}
-                className="group flex items-center justify-between w-full rounded-xl border border-white/60 bg-transparent px-3 py-2 text-white/90 hover:border-white"
+                className="group flex items-center justify-between w-full rounded-xl border border-zinc-300 bg-transparent px-3 py-2 text-zinc-700 hover:border-cyan-500 hover:text-zinc-950 dark:border-white/60 dark:text-white/90 dark:hover:border-white dark:hover:text-white"
               >
                 {/* OPEN CHAT */}
                 <button
@@ -104,22 +116,32 @@ const handleConfirmDelete = async () => {
           </div>
 
           {/* PROFILE (fixed bottom) */}
-          <div className="mt-3 border-t border-white/10 pt-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center font-semibold">
+          <div className="mt-3 border-t border-zinc-200 pt-4 dark:border-white/10">
+            <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-cyan-100 text-cyan-900 flex items-center justify-center font-semibold dark:bg-white/20 dark:text-white">
               {user?.username?.charAt(0).toUpperCase()}
             </div>
 
             <div className="min-w-0">
-              <p className="text-sm font-medium text-white truncate">
+              <p className="text-sm font-medium text-zinc-950 truncate dark:text-white">
                 {user?.username}
               </p>
-              <p className="text-xs text-white/50 truncate">{user?.email}</p>
+              <p className="text-xs text-zinc-500 truncate dark:text-white/50">{user?.email}</p>
             </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-3 w-full rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-left text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-100 dark:border-red-400/30 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
+            >
+              <i className="fa-solid fa-right-from-bracket mr-2"></i>Logout
+            </button>
           </div>
         </aside>
 
         <section className="relative max-w-3/5 mx-auto flex h-full min-w-0 flex-1 flex-col gap-4">
-          <div className="border-b border-white/10 pb-3">
+          <div className="border-b border-zinc-200 pb-3 dark:border-white/10">
             <h2 className="text-2xl font-semibold">
               {currentChatTitle
                 .replace(/\*/g, "")
@@ -133,10 +155,10 @@ const handleConfirmDelete = async () => {
             {isEmptyChat && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center animate-fadeIn">
-                  <h3 className="text-xl md:text-2xl font-semibold text-white/70">
+                  <h3 className="text-xl md:text-2xl font-semibold text-zinc-600 dark:text-white/70">
                     Start a new conversation
                   </h3>
-                  <p className="text-white/40 mt-2 text-sm md:text-base">
+                  <p className="text-zinc-400 mt-2 text-sm md:text-base dark:text-white/40">
                     Type a message below to begin
                   </p>
                 </div>
@@ -148,8 +170,8 @@ const handleConfirmDelete = async () => {
                 key={message.id}
                 className={`max-w-[82%] w-fit rounded-2xl px-4 py-3 text-sm md:text-base ${
                   message.role === "user"
-                    ? "ml-auto rounded-br-none bg-white/12 text-white"
-                    : "mr-auto text-white/90"
+                    ? "ml-auto rounded-br-none bg-cyan-500 text-white shadow-lg shadow-cyan-200/60 dark:bg-white/12 dark:text-white dark:shadow-none"
+                    : "mr-auto text-zinc-800 dark:text-white/90"
                 }`}
               >
                 {message.role === "user" ? (
@@ -167,12 +189,12 @@ const handleConfirmDelete = async () => {
                         <ol className="mb-2 list-decimal pl-5">{children}</ol>
                       ),
                       code: ({ children }) => (
-                        <code className="rounded bg-white/10 px-1 py-0.5">
+                        <code className="rounded bg-zinc-200 px-1 py-0.5 dark:bg-white/10">
                           {children}
                         </code>
                       ),
                       pre: ({ children }) => (
-                        <pre className="mb-2 overflow-x-auto rounded-xl bg-black/30 p-3">
+                        <pre className="mb-2 overflow-x-auto rounded-xl bg-zinc-200 p-3 dark:bg-black/30">
                           {children}
                         </pre>
                       ),
@@ -186,7 +208,7 @@ const handleConfirmDelete = async () => {
             ))}
           </div>
 
-          <footer className="rounded-3xl w-full absolute bottom-2 border border-white/60 bg-[#080b12] p-4 md:p-5">
+          <footer className="rounded-3xl w-full absolute bottom-2 border border-stone-200/80 bg-gradient-to-r from-[#faf9f6] via-stone-50 to-zinc-100 p-4 shadow-xl shadow-stone-300/40 dark:border-white/60 dark:bg-[#080b12] dark:bg-none dark:shadow-black/30 md:p-5">
             <form
               onSubmit={handleSubmitMessage}
               className="flex flex-col gap-3 md:flex-row"
@@ -196,12 +218,12 @@ const handleConfirmDelete = async () => {
                 value={chatInput}
                 onChange={(event) => setChatInput(event.target.value)}
                 placeholder="Type your message..."
-                className="w-full rounded-2xl border border-white/50 bg-transparent px-4 py-3 text-lg text-white outline-none transition placeholder:text-white/45 focus:border-white/90"
+                className="w-full rounded-2xl border border-zinc-300 bg-transparent px-4 py-3 text-lg text-zinc-950 outline-none transition placeholder:text-zinc-400 focus:border-cyan-500 dark:border-white/50 dark:text-white dark:placeholder:text-white/45 dark:focus:border-white/90"
               />
               <button
                 type="submit"
                 disabled={!chatInput.trim()}
-                className="rounded-2xl border border-white/60 px-6 py-3 text-lg font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-2xl border border-zinc-300 px-6 py-3 text-lg font-semibold text-zinc-800 transition hover:border-cyan-500 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/60 dark:text-white dark:hover:bg-white/10"
               >
                 Send
               </button>
@@ -210,15 +232,15 @@ const handleConfirmDelete = async () => {
         </section>
       </section>
       {deleteModalOpen && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/50 backdrop-blur-sm dark:bg-black/60">
     
-    <div className="w-[90%] max-w-md rounded-2xl border border-white/10 bg-[#0b0f17] p-6 shadow-xl">
+    <div className="w-[90%] max-w-md rounded-2xl border border-stone-200/80 bg-gradient-to-br from-[#faf9f6] via-stone-50 to-zinc-100 p-6 shadow-xl dark:border-white/10 dark:bg-[#0b0f17] dark:bg-none">
 
-      <h2 className="text-xl font-semibold text-white">
+      <h2 className="text-xl font-semibold text-zinc-950 dark:text-white">
         Delete Chat
       </h2>
 
-      <p className="mt-3 text-white/70">
+      <p className="mt-3 text-zinc-600 dark:text-white/70">
         Are you sure you want to delete this chat? This action cannot be undone.
       </p>
 
@@ -227,7 +249,7 @@ const handleConfirmDelete = async () => {
         {/* CANCEL */}
         <button
           onClick={handleCancelDelete}
-          className="px-4 py-2 rounded-xl border border-white/20 text-white/80 hover:bg-white/10 transition"
+          className="px-4 py-2 rounded-xl border border-zinc-300 text-zinc-700 hover:bg-zinc-100 transition dark:border-white/20 dark:text-white/80 dark:hover:bg-white/10"
         >
           Cancel
         </button>
