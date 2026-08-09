@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSelector } from "react-redux";
@@ -18,13 +18,24 @@ const Dashboard = () => {
   const currentChatId = useSelector((state) => state.chat.currentChatId);
   const currentChat = chats?.[currentChatId];
   const currentChatTitle = currentChat?.title ?? "New Chat";
+  const messagesContainerRef = useRef(null);
+  const isStreaming = useSelector((state) => state.chat.isStreaming);
+  const hasReceivedFirstChunk = useSelector((state) => state.chat.hasReceivedFirstChunk);
   const isEmptyChat = !currentChatId;
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
   useEffect(() => {
     chat.initializeSocketConnection();
     chat.handleGetChats();
+    return () => chat.cancelActiveStream();
   }, []);
+
+  // Runs after every message and streamed chunk render so the newest response
+  // stays visible as it is generated.
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) container.scrollTop = container.scrollHeight;
+  }, [currentChatId, currentChat?.messages]);
 
   const handleSubmitMessage = (event) => {
     event.preventDefault();
@@ -150,7 +161,7 @@ const handleLogout = async () => {
             </h2>
           </div>
 
-          <div className="messages flex-1 space-y-3 overflow-y-auto pr-1 pb-30">
+          <div ref={messagesContainerRef} className="messages flex-1 space-y-3 overflow-y-auto pr-1 pb-30">
             {/* EMPTY STATE */}
             {isEmptyChat && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -206,6 +217,11 @@ const handleLogout = async () => {
                 )}
               </div>
             ))}
+            {isStreaming && !hasReceivedFirstChunk && (
+              <div className="mr-auto w-fit rounded-2xl px-4 py-3 text-sm text-zinc-500 dark:text-white/60">
+                Thinking…
+              </div>
+            )}
           </div>
 
           <footer className="rounded-3xl w-full absolute bottom-2 border border-stone-200/80 bg-gradient-to-r from-[#faf9f6] via-stone-50 to-zinc-100 p-4 shadow-xl shadow-stone-300/40 dark:border-white/60 dark:bg-[#080b12] dark:bg-none dark:shadow-black/30 md:p-5">
@@ -222,10 +238,11 @@ const handleLogout = async () => {
               />
               <button
                 type="submit"
-                disabled={!chatInput.trim()}
+                onClick={isStreaming ? chat.cancelActiveStream : undefined}
+                disabled={isStreaming ? false : !chatInput.trim()}
                 className="rounded-2xl border border-zinc-300 px-6 py-3 text-lg font-semibold text-zinc-800 transition hover:border-cyan-500 hover:bg-cyan-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/60 dark:text-white dark:hover:bg-white/10"
               >
-                Send
+                {isStreaming ? "Stop" : "Send"}
               </button>
             </form>
           </footer>

@@ -40,6 +40,34 @@ export async function generateResponse(messages){
   return response.messages[response.messages.length-1].text;
 }
 
+// Uses Gemini's native token stream through the LangChain agent.  The agent is
+// intentionally kept here so tool calling continues to work exactly as it does
+// for the non-streaming response path.
+export async function* generateResponseStream(messages, signal) {
+  const stream = await agent.stream(
+    {
+      messages: [
+        new SystemMessage("You are a helpful and precise assistant for answering questions. If you don't know the answer, just say so. For questions that require current, recent, latest, real-time, or internet-based information, call the searchTool tool first and answer based on the search result."),
+        ...messages.map((msg) =>
+          msg.role === "user"
+            ? new HumanMessage(msg.content)
+            : new AIMessage(msg.content),
+        ),
+      ],
+    },
+    { streamMode: "messages", signal },
+  );
+
+  for await (const [chunk] of stream) {
+    if (signal?.aborted) return;
+
+    // Tool calls can also produce chunks. Only forward actual assistant text.
+    if (chunk.getType?.() !== "ai") continue;
+    const text = typeof chunk.content === "string" ? chunk.content : "";
+    if (text) yield text;
+  }
+}
+
 export async function generateChatTitle(message){
   const response = await mistralModel.invoke([
     new SystemMessage(`
