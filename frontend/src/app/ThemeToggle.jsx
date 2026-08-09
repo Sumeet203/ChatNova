@@ -35,7 +35,7 @@ const ThemeToggle = () => {
             : "translate-x-0 bg-cyan-400 text-white"
         }`}
       >
-        {isDark ? <i class="fa-solid fa-moon"></i> : <i class="fa-solid fa-sun"></i>}
+        {isDark ? <i className="fa-solid fa-moon"></i> : <i class="fa-solid fa-sun"></i>}
       </span>
     </button>
   );

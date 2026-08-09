@@ -188,13 +188,13 @@ export async function login(req,res){
         err : "Incorrect password"
     });
    }; 
-   if (!user.verified) {
-     return res.status(400).json({
-       message: "Please verify your email before logging in",
-       succes : false,
-        err : "Email not verified"
-     });
-   };
+  //  if (!user.verified) {
+  //    return res.status(400).json({
+  //      message: "Please verify your email before logging in",
+  //      succes : false,
+  //       err : "Email not verified"
+  //    });
+  //  };
    const token = jwt.sign(
      {
        id: user._id,
