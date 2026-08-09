@@ -7,6 +7,8 @@ const chatSlice = createSlice({
         chats: {},
         currentChatId: null,
         isLoading: false,
+        isStreaming: false,
+        hasReceivedFirstChunk: false,
         error: null,
     },
     reducers: {
@@ -20,8 +22,13 @@ const chatSlice = createSlice({
             }
         },
         addNewMessage: (state, action) => {
-            const { chatId, content, role } = action.payload
-            state.chats[ chatId ].messages.push({ content, role })
+            const { chatId, content, role, id } = action.payload
+            state.chats[ chatId ].messages.push({ id, content, role })
+        },
+        appendToMessage: (state, action) => {
+            const { chatId, messageId, text } = action.payload
+            const message = state.chats[chatId]?.messages.find((item) => item.id === messageId)
+            if (message) message.content += text
         },
         addMessages: (state, action) => {
             const { chatId, messages } = action.payload
@@ -36,11 +43,17 @@ const chatSlice = createSlice({
         setLoading: (state, action) => {
             state.isLoading = action.payload
         },
+        setStreaming: (state, action) => {
+            state.isStreaming = action.payload
+        },
+        setHasReceivedFirstChunk: (state, action) => {
+            state.hasReceivedFirstChunk = action.payload
+        },
         setError: (state, action) => {
             state.error = action.payload
         },
     }
 })
 
-export const { setChats, setCurrentChatId, setLoading, setError, createNewChat, addNewMessage, addMessages } = chatSlice.actions
+export const { setChats, setCurrentChatId, setLoading, setError, createNewChat, addNewMessage, appendToMessage, addMessages, setStreaming, setHasReceivedFirstChunk } = chatSlice.actions
 export default chatSlice.reducer
