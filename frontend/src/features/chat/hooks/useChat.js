@@ -1,35 +1,65 @@
 import { initializeSocketConnection } from "../service/chat.socket";
-import { sendMessage, getChats, getMessages, deleteChat } from "../service/chat.api";
-import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage,addMessages } from "../chat.slice";
+import { sendMessageStream, getChats, getMessages, deleteChat } from "../service/chat.api";
+import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, appendToMessage, addMessages, setStreaming, setHasReceivedFirstChunk } from "../chat.slice";
 import { useDispatch } from "react-redux";
+import { useRef } from "react";
 
 
 export const useChat = () => {
 
     const dispatch = useDispatch();
+    const activeStreamRef = useRef(null);
     
     async function handleSendMessage({ message, chatId }) {
-        dispatch(setLoading(true))
-        const data = await sendMessage({ message, chatId })
-        const { chat, aiMessage } = data
-        const activeChatId = chatId || chat._id
-        if (!chatId)
-            dispatch(createNewChat({
-                chatId: chat._id,
-                title: chat.title,
-            }))
-        dispatch(addNewMessage({
-            chatId: activeChatId,
-            content: message,
-            role: "user",
-        }))
-        dispatch(addNewMessage({
-            chatId: activeChatId,
-            content: aiMessage.content,
-            role: aiMessage.role,
-        }))
-        dispatch(setCurrentChatId(activeChatId))
-        dispatch(setLoading(false))
+        if (activeStreamRef.current) return;
+
+        const controller = new AbortController();
+        activeStreamRef.current = controller;
+        dispatch(setLoading(true));
+        dispatch(setStreaming(true));
+        dispatch(setHasReceivedFirstChunk(false));
+        dispatch(setError(null));
+
+        let activeChatId = chatId;
+        const assistantMessageId = crypto.randomUUID();
+        try {
+            await sendMessageStream({
+                message,
+                chatId,
+                signal: controller.signal,
+                onEvent: (event, data) => {
+                    if (event === "init") {
+                        activeChatId = data.chatId;
+                        if (data.chat) {
+                            dispatch(createNewChat({ chatId: activeChatId, title: data.title }));
+                        }
+                        dispatch(addNewMessage({ chatId: activeChatId, content: message, role: "user", id: crypto.randomUUID() }));
+                        dispatch(addNewMessage({ chatId: activeChatId, content: "", role: "ai", id: assistantMessageId }));
+                        dispatch(setCurrentChatId(activeChatId));
+                    }
+                    if (event === "chunk") {
+                        dispatch(setHasReceivedFirstChunk(true));
+                        dispatch(appendToMessage({ chatId: activeChatId, messageId: assistantMessageId, text: data.text }));
+                    }
+                    if (event === "error") {
+                        throw new Error(data.message);
+                    }
+                },
+            });
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                dispatch(setError(error.message || "Unable to generate a response."));
+            }
+        } finally {
+            if (activeStreamRef.current === controller) activeStreamRef.current = null;
+            dispatch(setLoading(false));
+            dispatch(setStreaming(false));
+            dispatch(setHasReceivedFirstChunk(false));
+        }
+    }
+
+    function cancelActiveStream() {
+        activeStreamRef.current?.abort();
     }
 
     async function handleGetChats() {
@@ -84,7 +114,8 @@ export const useChat = () => {
         handleGetChats,
         handleOpenChat,
         handleOpenNewChat,
-        handleDeleteChat
+        handleDeleteChat,
+        cancelActiveStream,
     }
 
 }

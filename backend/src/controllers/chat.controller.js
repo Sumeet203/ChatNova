@@ -1,39 +1,77 @@
-import { generateChatTitle, generateResponse } from "../services/ai.service.js";
+import { generateChatTitle, generateResponseStream } from "../services/ai.service.js";
 import chatModel from "../models/chat.model.js";
 import messageModel from "../models/message.model.js";
-    export async function sendMessage(req,res){
-        const {message, chatId} = req.body;
-        let chat=null , title = null;
-        if(!chatId){
-            title = await generateChatTitle(message);
-            chat = await chatModel.create({
-                user : req.user.id,
-                title 
-            });
-        }
-        
-        const userMessage = await messageModel.create({
-            chat: chatId || chat._id,
-            content: message,
-            role: "user"
-        }) 
-        const messages = await messageModel.find({chat : chatId || chat._id});
-        console.log(messages);  
-        
-        const result = await generateResponse(messages);
+function sendStreamEvent(res, event, data) {
+    res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+}
 
-        const aiMessage= await messageModel.create({
-            chat : chatId || chat._id,
-            content : result, 
-            role : 'ai'
-        })
-        res.status(201).json({
-            aiMessage,
-            title : title, 
-            chat,
-            message
-        })
-    };
+export async function sendMessage(req,res){
+    const {message, chatId} = req.body;
+    const abortController = new AbortController();
+    let clientDisconnected = false;
+
+    res.set({
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no",
+    });
+    res.flushHeaders();
+
+    res.on("close", () => {
+        clientDisconnected = true;
+        abortController.abort();
+    });
+
+    try {
+        let chat = null;
+        let title = null;
+        if (!chatId) {
+            title = await generateChatTitle(message);
+            chat = await chatModel.create({ user: req.user.id, title });
+        } else {
+            chat = await chatModel.findOne({ _id: chatId, user: req.user.id });
+            if (!chat) {
+                sendStreamEvent(res, "error", { message: "Chat not found" });
+                return res.end();
+            }
+        }
+
+        const activeChatId = chat._id;
+        await messageModel.create({ chat: activeChatId, content: message, role: "user" });
+        const messages = await messageModel.find({ chat: activeChatId }).sort({ createdAt: 1 });
+
+        // The init event lets the client create the user message and exactly one
+        // empty assistant message before the first model token arrives.
+        sendStreamEvent(res, "init", {
+            chat: !chatId ? chat : null,
+            title,
+            chatId: activeChatId.toString(),
+        });
+
+        let content = "";
+        for await (const chunk of generateResponseStream(messages, abortController.signal)) {
+            if (clientDisconnected) return;
+            content += chunk;
+            sendStreamEvent(res, "chunk", { text: chunk });
+        }
+
+        if (clientDisconnected) return;
+        const aiMessage = await messageModel.create({
+            chat: activeChatId,
+            content,
+            role: "ai",
+        });
+        sendStreamEvent(res, "done", { aiMessage });
+        res.end();
+    } catch (error) {
+        if (!clientDisconnected) {
+            console.error("Chat stream failed:", error);
+            sendStreamEvent(res, "error", { message: "Unable to generate a response. Please try again." });
+            res.end();
+        }
+    }
+};
 
 export async function getChats(req,res){
     const user = req.user;
