@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import userModel from "../models/user.model.js";
 
 export async function authMiddleware(req,res,next){
     const token = req.cookies.token;
@@ -20,4 +21,16 @@ export async function authMiddleware(req,res,next){
             err : "Invalid token"
         });
     }
+}
+
+export async function verifiedAuthMiddleware(req, res, next) {
+    const user = await userModel.findById(req.user.id).select("verified");
+    if (!user?.verified) {
+        return res.status(403).json({
+            message: "Please verify your email before accessing chat",
+            success: false,
+            err: "Email not verified"
+        });
+    }
+    next();
 }

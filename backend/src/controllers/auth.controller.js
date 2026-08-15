@@ -25,8 +25,7 @@ export async function register(req,res){
     });
     const emailVerificationToken = jwt.sign({
       email : user.email,
-    },process.env.JWT_SECRET);
-
+    },process.env.JWT_SECRET, { expiresIn: "24h" });
     await sendEmail({
       to: email,
       subject: "Verify Your Email - Perpexility",
@@ -85,7 +84,7 @@ export async function register(req,res){
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}"
+                    <a href="${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailVerificationToken}"
                       style="background: linear-gradient(135deg, #4f46e5, #9333ea); 
                              color:#ffffff; 
                              text-decoration:none; 
@@ -104,7 +103,7 @@ export async function register(req,res){
               </p>
 
               <p style="font-size:13px; color:#4f46e5; word-break:break-all;">
-                http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}
+                ${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailVerificationToken}
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
@@ -152,13 +151,16 @@ export async function register(req,res){
 </body>
 </html>`,
     });
+    const authToken = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    res.cookie("token", authToken, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
     res.status(201).json({
         message : "User created successfully",
         success : true,
         user : {
             id : user._id,
             username : user.username,
-            email : user.email
+            email : user.email,
+            verified: user.verified
         }
     })
 };
@@ -210,7 +212,8 @@ export async function login(req,res){
      user : {
       id : user._id,
       username : user.username,
-      email : user.email
+      email : user.email,
+      verified: user.verified
      }
    });
 
@@ -234,18 +237,11 @@ export async function verifyEmail(req,res){
       err : "User not found"
     })
   };
-  if (user.verified) {
-  const html = `
-    <h1>Email Already Verified</h1>
-    <p>Hi ${user.username},</p>
-    <p>Your email is already verified. You can log in to your account.</p>
-  `;
-  return res.send(html);
+  if (!user.verified) {
+    user.verified = true;
+    await user.save();
   }
-  user.verified = true;
-  await user.save();
-  const html = `<h1>Email Verified</h1><p>Hii ${user.username},</p><p>Your email has been successfully verified. You can now log in to your account.</p><p>Best regards,<br/>The Perpexility Team</p>`;
-  return res.send(html);
+  return res.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/verify-email?status=success`);
   } catch (error) {
     return res.status(400).json({
       message : "Invalid or expired token",
@@ -295,7 +291,7 @@ export async function resendEmailVerificationLink(req,res){
     })
   };
   if(user.verified){
-    res.status(400).json({
+    return res.status(400).json({
       message : "Email is already verified",
       success : false,
       err : "Email already verified"
@@ -303,7 +299,7 @@ export async function resendEmailVerificationLink(req,res){
   };
   const emailverificationToken = jwt.sign({
     email : user.email,
-  },process.env.JWT_SECRET);
+  },process.env.JWT_SECRET, { expiresIn: "24h" });
   await sendEmail({
     to: user.email,
     subject: "Verify Your Email - Perpexility",
@@ -362,7 +358,7 @@ export async function resendEmailVerificationLink(req,res){
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="http://localhost:3000/api/auth/verify-email?token=${emailverificationToken }"
+                    <a href="${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailverificationToken}"
                       style="background: linear-gradient(135deg, #4f46e5, #9333ea); 
                              color:#ffffff; 
                              text-decoration:none; 
@@ -381,7 +377,7 @@ export async function resendEmailVerificationLink(req,res){
               </p>
 
               <p style="font-size:13px; color:#4f46e5; word-break:break-all;">
-                http://localhost:3000/api/auth/verify-email?token=${emailverificationToken}
+                ${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailverificationToken}
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">

@@ -13,7 +13,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const [chatInput, setChatInput] = useState("");
-  const [userMessage, setUserMessage] = useState("");
   const chats = useSelector((state) => state.chat.chats);
   const currentChatId = useSelector((state) => state.chat.currentChatId);
   const currentChat = chats?.[currentChatId];
@@ -24,6 +23,7 @@ const Dashboard = () => {
   const isEmptyChat = !currentChatId;
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   useEffect(() => {
     chat.initializeSocketConnection();
     chat.handleGetChats();
@@ -51,6 +51,7 @@ const Dashboard = () => {
   const openChat = (chatId) => {
     console.log("Opening chat with id : ", chatId);
     chat.handleOpenChat(chatId, chats);
+    setSidebarOpen(false);
   };
   const handleCancelDelete = () => {
   setDeleteModalOpen(false);
@@ -75,18 +76,23 @@ const handleLogout = async () => {
   }
 };
   return (
-    <main className="min-h-screen w-full bg-gradient-to-br from-stone-100 via-neutral-50 to-zinc-100 p-3 text-zinc-950 dark:bg-[#07090f] dark:bg-none dark:text-white md:p-5">
-      <section className="mx-auto flex h-[calc(100vh-1.5rem)] w-full gap-4 rounded-3xl border   p-1 md:h-[calc(100vh-2.5rem)] md:gap-6 md:p-1 border-none">
-        <aside className="hidden h-full w-72 shrink-0 rounded-3xl border border-stone-200/80 bg-gradient-to-br from-[#faf9f6] via-stone-50 to-zinc-100 p-4 shadow-xl shadow-stone-300/40 dark:border-white/10 dark:bg-[#080b12] dark:bg-none dark:shadow-black/20 md:flex flex-col">
+    <main className="min-h-screen w-full bg-gradient-to-br from-stone-100 via-neutral-50 to-zinc-100 p-0 text-zinc-950 dark:bg-[#07090f] dark:bg-none dark:text-white md:p-5">
+      {sidebarOpen && <button type="button" aria-label="Close chat menu" onClick={() => setSidebarOpen(false)} className="fixed inset-0 z-[70] bg-zinc-950/45 backdrop-blur-sm md:hidden" />}
+      <section className="mx-auto flex h-screen w-full gap-4 p-2 md:h-[calc(100vh-2.5rem)] md:gap-6 md:p-1">
+        <aside className={`fixed inset-y-0 left-0 z-[80] flex w-[min(20rem,calc(100vw-3rem))] flex-col border-r border-stone-200/80 bg-gradient-to-br from-[#faf9f6] via-stone-50 to-zinc-100 p-4 shadow-2xl shadow-zinc-950/20 transition-transform duration-300 ease-out dark:border-white/10 dark:bg-[#080b12] dark:bg-none dark:shadow-black/50 md:relative md:z-auto md:h-full md:w-72 md:shrink-0 md:translate-x-0 md:rounded-3xl md:border md:shadow-xl md:shadow-stone-300/40 dark:md:shadow-black/20 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
           {/* HEADER (fixed top) */}
-          <h1 className="mb-4 text-3xl font-semibold tracking-tight">
-            CodeNova
-          </h1>
+          <div className="mb-4 flex items-center justify-between">
+            <h1 className="text-3xl font-semibold tracking-tight">ChatNova</h1>
+            <button type="button" onClick={() => setSidebarOpen(false)} aria-label="Close menu" className="rounded-xl p-2 text-zinc-500 transition hover:bg-zinc-200 hover:text-zinc-950 dark:text-white/60 dark:hover:bg-white/10 dark:hover:text-white md:hidden"><i className="fa-solid fa-xmark text-lg" /></button>
+          </div>
 
           {/* NEW CHAT (fixed under header) */}
           <button
             type="button"
-            onClick={() => chat.handleOpenNewChat()}
+            onClick={() => {
+              chat.handleOpenNewChat();
+              setSidebarOpen(false);
+            }}
             className="w-full mb-3 cursor-pointer rounded-xl border border-zinc-300 bg-transparent px-3 py-2 text-left text-base font-medium text-zinc-700 transition hover:border-cyan-500 hover:text-zinc-950 dark:border-white/60 dark:text-white/90 dark:hover:border-white dark:hover:text-white"
           >
             <i className="fa-solid fa-plus mr-2"></i>New Chat
@@ -116,8 +122,9 @@ const handleLogout = async () => {
     e.stopPropagation();
     setSelectedChatId(chatItem.id);
     setDeleteModalOpen(true);
+    setSidebarOpen(false);
   }}
-                  className="opacity-0 group-hover:opacity-100 transition text-red-400 hover:text-red-300 ml-2 cursor-pointer"
+                  className="ml-2 cursor-pointer text-red-400 transition hover:text-red-300 md:opacity-0 md:group-hover:opacity-100"
                   title="Delete chat"
                 >
                   <i className="fa-solid fa-trash-can"></i>
@@ -151,9 +158,10 @@ const handleLogout = async () => {
           </div>
         </aside>
 
-        <section className="relative max-w-3/5 mx-auto flex h-full min-w-0 flex-1 flex-col gap-4">
-          <div className="border-b border-zinc-200 pb-3 dark:border-white/10">
-            <h2 className="text-2xl font-semibold">
+        <section className="relative mx-auto flex h-full min-w-0 flex-1 flex-col gap-3 md:gap-4">
+          <div className="flex items-center gap-3 border-b border-zinc-200 pb-3 dark:border-white/10">
+            <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open chat history" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-700 shadow-sm transition hover:border-cyan-400 hover:text-cyan-600 dark:border-white/15 dark:bg-white/5 dark:text-white md:hidden"><i className="fa-solid fa-bars" /></button>
+            <h2 className="min-w-0 truncate text-xl font-semibold md:text-2xl">
               {currentChatTitle
                 .replace(/\*/g, "")
                 .replace(/"/g, "")
@@ -161,7 +169,7 @@ const handleLogout = async () => {
             </h2>
           </div>
 
-          <div ref={messagesContainerRef} className="messages flex-1 space-y-3 overflow-y-auto pr-1 pb-30">
+          <div ref={messagesContainerRef} className="messages flex-1 space-y-3 overflow-y-auto pr-1 pb-44 md:pb-36">
             {/* EMPTY STATE */}
             {isEmptyChat && (
               <div className="absolute inset-0 flex items-center justify-center">

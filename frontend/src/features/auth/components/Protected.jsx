@@ -11,6 +11,9 @@ const Protected = ({children}) => {
   if(!user){
     return <Navigate to="/login" replace />
   }
+  if(!user.verified){
+    return <Navigate to="/verify-email" replace />
+  }
   return (
     children
   )
