@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import {registerUser,loginUser,getMe,logoutUser} from '../service/auth.api';
+import {registerUser,loginUser,getMe,logoutUser,resendVerificationEmail} from '../service/auth.api';
 import {setUser,setLoading,setError} from '../auth.slice';
 
 export function useAuth(){
@@ -9,6 +9,7 @@ export function useAuth(){
             dispatch(setLoading(true));
             const data = await registerUser({email,username,password});
             dispatch(setUser(data.user))
+            return data.user;
         }catch(error){
             dispatch(setError(error.response?.data?.message || "Registration failed"));
         }finally{
@@ -17,6 +18,7 @@ export function useAuth(){
     };
     async function handleLogin({email,password}){
         try{
+            dispatch(setError(null));
             dispatch(setLoading(true));
             const data = await loginUser({email,password});
             dispatch(setUser(data.user));
@@ -28,19 +30,34 @@ export function useAuth(){
             dispatch(setLoading(false));
         }
     };
+    async function handleResendVerificationEmail(){
+        try{
+            dispatch(setError(null));
+            return await resendVerificationEmail();
+        }catch(error){
+            const message = error.response?.data?.message || "Couldn't resend the verification email";
+            dispatch(setError(message));
+            throw new Error(message);
+        }
+    }
     async function handleGetMe(){
         try{
+            dispatch(setError(null));
             dispatch(setLoading(true));
             const data = await getMe();
             dispatch(setUser(data.user));
         }catch(error){
-            dispatch(setError(error.response?.data?.message || "Failed to fetch user data"));
+            dispatch(setUser(null));
+            if (error.response?.status !== 401) {
+                dispatch(setError(error.response?.data?.message || "Failed to fetch user data"));
+            }
         }finally{
             dispatch(setLoading(false));
         }
     };
     async function handleLogout(){
         try{
+            dispatch(setError(null));
             dispatch(setLoading(true));
             await logoutUser();
             dispatch(setUser(null));
@@ -57,6 +74,7 @@ export function useAuth(){
         handleRegister,
         handleLogin,
         handleGetMe,
-        handleLogout
+        handleLogout,
+        handleResendVerificationEmail
     }
 }

@@ -22,12 +22,12 @@ const Register = () => {
     }
     const registeredUser = await handleRegister(registerData);
     if (registeredUser) {
-      navigate('/');
+      navigate('/verify-email', { state: { email: registeredUser.email } });
     }
 
     console.log('Register form submitted:', registerData)
   }
-  if(!loading && user){
+  if(!loading && user?.verified){
     return <Navigate to="/" replace />
   }
   return (

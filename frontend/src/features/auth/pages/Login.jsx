@@ -21,12 +21,12 @@ const Login = () => {
     };
     const loggedInUser = await handleLogin(loginData);
     if (loggedInUser) {
-      navigate('/');
+      navigate(loggedInUser.verified ? '/' : '/verify-email', { state: { email: loggedInUser.email } });
     }
 
     // console.log('Login form submitted:', loginData)
   }
-  if(!loading && user){
+  if(!loading && user?.verified){
     return <Navigate to="/" replace />
   }
 

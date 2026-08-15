@@ -19,6 +19,11 @@ export async function getMe(){
 }
 
 export async function logoutUser(){
-    const response = await api.post('/api/auth/logout');
+    const response = await api.get('/api/auth/logout');
+    return response.data;
+}
+
+export async function resendVerificationEmail(){
+    const response = await api.get('/api/auth/resend-verification-email');
     return response.data;
 }
