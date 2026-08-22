@@ -2,6 +2,20 @@ import userModel from "../models/user.model.js";
 import jwt from 'jsonwebtoken';
 import { sendEmail } from "../services/mail.service.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const authCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
+const clearAuthCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+};
+
 /**
  * @route POST /api/auth/register
  * @desc Register a new user
@@ -152,7 +166,7 @@ export async function register(req,res){
 </html>`,
     });
     const authToken = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    res.cookie("token", authToken, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production" });
+    res.cookie("token", authToken, authCookieOptions);
     res.status(201).json({
         message : "User created successfully",
         success : true,
@@ -205,7 +219,7 @@ export async function login(req,res){
      process.env.JWT_SECRET,
      { expiresIn: "7d" },
    );
-   res.cookie("token",token);
+   res.cookie("token", token, authCookieOptions);
    res.status(200).json({
      message : "Login successful",
      success : true,
@@ -438,7 +452,7 @@ export async function resendEmailVerificationLink(req,res){
  */ 
 
 export async function logout(req,res){
-  res.clearCookie("token");
+  res.clearCookie("token", clearAuthCookieOptions);
   res.status(200).json({
     message : "Logout successful",
     success : true,

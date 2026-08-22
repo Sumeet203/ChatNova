@@ -10,8 +10,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
+const allowedOrigin = process.env.FRONTEND_URL || "https://chat-nova-virid.vercel.app";
+
 app.use(cors({
-    origin : "https://chat-nova-virid.vercel.app",
+    origin : allowedOrigin,
     credentials : true, 
     methods : ['GET','POST','PUT','DELETE'],
 }));

@@ -70,6 +70,15 @@ body {
   color: #f8fafc;
 }
 
+/* Prevent browser autofill from switching auth fields to a light background in dark mode. */
+.dark .auth-page-in input:-webkit-autofill,
+.dark .auth-page-in input:-webkit-autofill:hover,
+.dark .auth-page-in input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0 1000px #0f172a inset;
+  caret-color: #f8fafc;
+}
+
 /* Keep display-only UI text from showing the browser's text cursor. */
 .dashboard-ui,
 .dashboard-ui * {
