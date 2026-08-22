@@ -5,7 +5,7 @@ let io;
 export function initSocket(httpServer){
     io = new Server(httpServer,{
         cors : {
-            origin : "https://chat-nova-bsq4lqxct-sumeets-projects-74908129.vercel.app/",
+            origin : "https://chat-nova-virid.vercel.app",
             credentials : true
         }
     });

@@ -241,7 +241,7 @@ export async function verifyEmail(req,res){
     user.verified = true;
     await user.save();
   }
-  return res.redirect(`${process.env.FRONTEND_URL || "https://chat-nova-bsq4lqxct-sumeets-projects-74908129.vercel.app"}/verify-email?status=success`);
+  return res.redirect(`${process.env.FRONTEND_URL || "https://chat-nova-virid.vercel.app"}/verify-email?status=success`);
   } catch (error) {
     return res.status(400).json({
       message : "Invalid or expired token",

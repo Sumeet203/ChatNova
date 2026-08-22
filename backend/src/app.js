@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(cors({
-    origin : "https://chat-nova-bsq4lqxct-sumeets-projects-74908129.vercel.app",
+    origin : "https://chat-nova-virid.vercel.app",
     credentials : true, 
     methods : ['GET','POST','PUT','DELETE'],
 }));
