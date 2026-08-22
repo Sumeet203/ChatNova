@@ -1,12 +1,12 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL : "http://localhost:3000",
+    baseURL : "https://chatnova-dshx.onrender.com",
     withCredentials : true
 });
 
 export const sendMessageStream = async ({ message, chatId, signal, onEvent }) => {
-    const response = await fetch("http://localhost:3000/api/chats/message", {
+    const response = await fetch("https://chatnova-dshx.onrender.com/api/chats/message", {
         method: "POST",
         credentials: "include",
         signal,

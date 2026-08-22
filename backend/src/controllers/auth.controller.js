@@ -84,7 +84,7 @@ export async function register(req,res){
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailVerificationToken}"
+                    <a href="${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailVerificationToken}"
                       style="background: linear-gradient(135deg, #4f46e5, #9333ea); 
                              color:#ffffff; 
                              text-decoration:none; 
@@ -103,7 +103,7 @@ export async function register(req,res){
               </p>
 
               <p style="font-size:13px; color:#4f46e5; word-break:break-all;">
-                ${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailVerificationToken}
+                ${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailVerificationToken}
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
@@ -358,7 +358,7 @@ export async function resendEmailVerificationLink(req,res){
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailverificationToken}"
+                    <a href="${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailverificationToken}"
                       style="background: linear-gradient(135deg, #4f46e5, #9333ea); 
                              color:#ffffff; 
                              text-decoration:none; 
@@ -377,7 +377,7 @@ export async function resendEmailVerificationLink(req,res){
               </p>
 
               <p style="font-size:13px; color:#4f46e5; word-break:break-all;">
-                ${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${emailverificationToken}
+                ${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailverificationToken}
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
