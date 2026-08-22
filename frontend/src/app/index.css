@@ -70,6 +70,23 @@ body {
   color: #f8fafc;
 }
 
+/* Keep display-only UI text from showing the browser's text cursor. */
+.dashboard-ui,
+.dashboard-ui * {
+  cursor: default;
+  user-select: none;
+}
+
+.dashboard-ui :is(button, a, [role="button"], label[for]) {
+  cursor: pointer;
+}
+
+/* Text fields remain selectable and retain their expected input cursor. */
+.dashboard-ui :is(input, textarea, [contenteditable="true"]) {
+  cursor: text;
+  user-select: text;
+}
+
 /* Monospace font utility for code */
 code, pre, .font-mono {
   font-family: 'JetBrains Mono', monospace;

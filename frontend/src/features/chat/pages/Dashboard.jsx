@@ -116,7 +116,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <main className="h-screen w-screen max-w-full overflow-hidden bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-[#020617] dark:text-slate-100 p-0 md:p-3">
+    <main className="dashboard-ui h-screen w-screen max-w-full overflow-hidden bg-slate-50 text-slate-900 transition-colors duration-200 dark:bg-[#020617] dark:text-slate-100 p-0 md:p-3">
       {/* Mobile Drawer Overlay */}
       {sidebarOpen && (
         <button

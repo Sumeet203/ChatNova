@@ -28,7 +28,7 @@ export async function register(req,res){
     },process.env.JWT_SECRET, { expiresIn: "24h" });
     await sendEmail({
       to: email,
-      subject: "Verify Your Email - Perpexility",
+      subject: "Verify Your Email - ChatNova",
       html: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +54,7 @@ export async function register(req,res){
               style="background: linear-gradient(135deg, #4f46e5, #9333ea); padding:30px; color:#ffffff;">
               
               <h1 style="margin:0; font-size:28px; letter-spacing:1px;">
-                Perpexility
+                ChatNova
               </h1>
 
               <p style="margin-top:8px; font-size:14px; opacity:0.9;">
@@ -73,7 +73,7 @@ export async function register(req,res){
               </h2>
 
               <p style="font-size:15px; line-height:1.6;">
-                Thank you for registering on <strong>Perpexility</strong>. We're excited to have you onboard!
+                Thank you for registering on <strong>ChatNova</strong>. We're excited to have you onboard!
               </p>
 
               <p style="font-size:15px; line-height:1.6;">
@@ -107,12 +107,12 @@ export async function register(req,res){
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
-                If you did not register on Perpexility, please ignore this email.
+                If you did not register on ChatNova, please ignore this email.
               </p>
 
               <p style="margin-top:30px; font-size:14px;">
                 Best regards,<br />
-                <strong>The Perpexility Team</strong>
+                <strong>The ChatNova Team</strong>
               </p>
 
             </td>
@@ -129,7 +129,7 @@ export async function register(req,res){
               style="padding:20px; font-size:12px; color:#888888; background:#f9fafb;">
 
               <p style="margin:0;">
-                © 2026 Perpexility. All rights reserved.
+                © 2026 ChatNova. All rights reserved.
               </p>
 
               <p style="margin:6px 0 0;">
@@ -302,7 +302,7 @@ export async function resendEmailVerificationLink(req,res){
   },process.env.JWT_SECRET, { expiresIn: "24h" });
   await sendEmail({
     to: user.email,
-    subject: "Verify Your Email - Perpexility",
+    subject: "Verify Your Email - ChatNova",
     html: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -328,7 +328,7 @@ export async function resendEmailVerificationLink(req,res){
               style="background: linear-gradient(135deg, #4f46e5, #9333ea); padding:30px; color:#ffffff;">
               
               <h1 style="margin:0; font-size:28px; letter-spacing:1px;">
-                Perpexility
+                ChatNova
               </h1>
 
               <p style="margin-top:8px; font-size:14px; opacity:0.9;">
@@ -347,7 +347,7 @@ export async function resendEmailVerificationLink(req,res){
               </h2>
 
               <p style="font-size:15px; line-height:1.6;">
-                Thank you for registering on <strong>Perpexility</strong>. We're excited to have you onboard!
+                Thank you for registering on <strong>ChatNova</strong>. We're excited to have you onboard!
               </p>
 
               <p style="font-size:15px; line-height:1.6;">
@@ -381,12 +381,12 @@ export async function resendEmailVerificationLink(req,res){
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
-                If you did not register on Perpexility, please ignore this email.
+                If you did not register on ChatNova, please ignore this email.
               </p>
 
               <p style="margin-top:30px; font-size:14px;">
                 Best regards,<br />
-                <strong>The Perpexility Team</strong>
+                <strong>The ChatNova Team</strong>
               </p>
 
             </td>
@@ -403,7 +403,7 @@ export async function resendEmailVerificationLink(req,res){
               style="padding:20px; font-size:12px; color:#888888; background:#f9fafb;">
 
               <p style="margin:0;">
-                © 2026 Perpexility. All rights reserved.
+                © 2026 ChatNova. All rights reserved.
               </p>
 
               <p style="margin:6px 0 0;">
