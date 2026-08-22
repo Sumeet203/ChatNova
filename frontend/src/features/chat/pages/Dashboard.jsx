@@ -250,7 +250,10 @@ const Dashboard = () => {
 
               <button
                 type="button"
-                onClick={() => setSettingsModalOpen(true)}
+                onClick={() => {
+                  setSidebarOpen(false);
+                  setSettingsModalOpen(true);
+                }}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition"
                 title="Settings"
               >
@@ -297,13 +300,16 @@ const Dashboard = () => {
 
             {/* Model Badge Display & Header Settings */}
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50/80 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-800/50 dark:bg-indigo-950/40 dark:text-indigo-300">
+              <span className="hidden items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50/80 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-800/50 dark:bg-indigo-950/40 dark:text-indigo-300 sm:inline-flex">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                 <span>Gemini 3.1 Pro</span>
               </span>
               <button
                 type="button"
-                onClick={() => setSettingsModalOpen(true)}
+                onClick={() => {
+                  setSidebarOpen(false);
+                  setSettingsModalOpen(true);
+                }}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition"
                 title="Chat Settings"
               >
@@ -487,7 +493,7 @@ const Dashboard = () => {
           </div>
 
           {/* FLOATING MESSAGE INPUT DOCK */}
-          <footer className="absolute bottom-3 left-0 right-0 px-3 md:px-6">
+          <footer className="absolute bottom-6 left-0 right-0 px-3 md:bottom-3 md:px-6">
             <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-lg backdrop-blur-md dark:border-slate-800/80 dark:bg-[#0f172a]/95 dark:shadow-slate-950/50">
               <form onSubmit={handleSubmitMessage} className="flex items-center gap-2">
                 {/* Main Text Input */}
