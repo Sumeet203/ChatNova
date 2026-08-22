@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss" source("../");
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -6,7 +7,6 @@
     opacity: 0;
     transform: translateY(10px) scale(0.98);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -27,27 +27,10 @@
   to { opacity: 1; transform: translateY(0) translateX(0); }
 }
 
-html,
-body,
-#root {
-  min-height: 100%;
-}
-
-body {
-  background: linear-gradient(135deg, #f5f1ea 0%, #faf9f6 52%, #ece9e3 100%);
-}
-
-.dark body {
-  background: #07090f;
-}
-/* .messages::-webkit-scrollbar {
-  display: none;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -56,21 +39,74 @@ body {
 }
 
 .animate-fadeIn {
-  animation: fadeInUp 0.5s ease-out;
+  animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
 
+.dot-pulse-1 { animation: dotPulse 1.2s infinite 0s; }
+.dot-pulse-2 { animation: dotPulse 1.2s infinite 0.2s; }
+.dot-pulse-3 { animation: dotPulse 1.2s infinite 0.4s; }
+
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background-color: #f8fafc;
+  color: #0f172a;
+  overflow: hidden;
+}
+
+.dark body {
+  background-color: #020617;
+  color: #f8fafc;
+}
+
+/* Monospace font utility for code */
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Clean scrollbar styling */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-
-/* Hide scrollbar for Firefox */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-html, body {
-  height: 100%;
-  overflow: hidden;
-  background: #07090f; /* same as your app bg */
-} 
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+ 
