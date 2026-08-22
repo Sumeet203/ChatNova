@@ -77,7 +77,8 @@ body {
   user-select: none;
 }
 
-.dashboard-ui :is(button, a, [role="button"], label[for]) {
+.dashboard-ui :is(button, a, [role="button"], label[for], .cursor-pointer),
+.dashboard-ui :is(button, a, [role="button"], label[for], .cursor-pointer) * {
   cursor: pointer;
 }
 
