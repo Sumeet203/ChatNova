@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router'
 import { useAuth } from '../hook/useAuth.js'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setError } from '../auth.slice.js'
 import ChatNovaLogo from '../../../components/ChatNovaLogo'
 import ThemeToggle from '../../../app/ThemeToggle'
 
@@ -11,9 +12,14 @@ const Register = () => {
   const [password, setPassword] = useState('')
   const { handleRegister } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
+
+  useEffect(() => {
+    dispatch(setError(null));
+  }, [dispatch]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,7 +43,7 @@ const Register = () => {
       </div>
 
       <div className="auth-page-in w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-7 shadow-xl backdrop-blur-md dark:border-slate-800/80 dark:bg-[#0f172a] dark:shadow-slate-950/50 sm:p-9">
-        
+
         {/* ChatNova Official Brand Logo & Header */}
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="mb-3 flex items-center justify-center">
