@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router'
 import { useAuth } from '../hook/useAuth.js'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setError } from '../auth.slice.js'
 import ChatNovaLogo from '../../../components/ChatNovaLogo'
 import ThemeToggle from '../../../app/ThemeToggle'
 
@@ -11,9 +12,14 @@ const Login = () => {
 
   const { handleLogin } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
+
+  useEffect(() => {
+    dispatch(setError(null));
+  }, [dispatch]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

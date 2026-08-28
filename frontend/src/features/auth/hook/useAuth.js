@@ -42,15 +42,12 @@ export function useAuth(){
     }
     async function handleGetMe(){
         try{
-            dispatch(setError(null));
             dispatch(setLoading(true));
             const data = await getMe();
             dispatch(setUser(data.user));
         }catch(error){
             dispatch(setUser(null));
-            if (error.response?.status !== 401) {
-                dispatch(setError(error.response?.data?.message || "Failed to fetch user data"));
-            }
+            // Background session check failure indicates no active session; do not dispatch toast error.
         }finally{
             dispatch(setLoading(false));
         }
