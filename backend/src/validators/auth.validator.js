@@ -47,3 +47,54 @@ export const loginValidator = [
     .withMessage("Password is required"),
   validate,
 ];
+
+export const forgotPasswordValidator = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email")
+    .normalizeEmail(),
+  validate,
+];
+
+export const verifyResetCodeValidator = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email")
+    .normalizeEmail(),
+  body("otp")
+    .trim()
+    .notEmpty()
+    .withMessage("Verification code is required")
+    .isLength({ min: 6, max: 6 })
+    .withMessage("Verification code must be 6 digits"),
+  validate,
+];
+
+export const resetPasswordValidator = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Please provide a valid email")
+    .normalizeEmail(),
+  body("otp")
+    .trim()
+    .notEmpty()
+    .withMessage("Verification code is required")
+    .isLength({ min: 6, max: 6 })
+    .withMessage("Verification code must be 6 digits"),
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New password is required")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long"),
+  validate,
+];
+

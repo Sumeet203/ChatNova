@@ -71,7 +71,7 @@ export const useChat = () => {
                 id: chat._id,
                 title: chat.title,
                 messages: [],
-                lastUpdated: chat.updatedAt,
+                lastUpdated: chat.updatedAt || chat.createdAt || new Date().toISOString(),
             }
             return acc
         }, {})))

@@ -102,11 +102,13 @@ const Dashboard = () => {
     }
   };
 
-  // Filter chats based on user search query
-  const filteredChats = Object.values(chats || {}).filter((c) => {
-    if (!searchQuery.trim()) return true;
-    return c.title?.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  // Filter and sort chats in descending order (latest chat on top)
+  const filteredChats = Object.values(chats || {})
+    .filter((c) => {
+      if (!searchQuery.trim()) return true;
+      return c.title?.toLowerCase().includes(searchQuery.toLowerCase());
+    })
+    .sort((a, b) => new Date(b.lastUpdated || 0) - new Date(a.lastUpdated || 0));
 
   const promptSuggestions = [
     { title: "Explain Cloud Architecture", desc: "Load balancers, microservices & failover strategies" },
