@@ -4,7 +4,7 @@ import { ChatMistralAI } from "@langchain/mistralai";
 import * as zod from "zod";
 import { searchInternet } from "./internet.service.js";
 const geminiModel = new ChatGoogleGenerativeAI({
-  model: "gemini-2.5-flash-lite",
+  model: "gemini-3.5-flash-lite",
   apiKey: process.env.GEMINI_API_KEY
 });
 const mistralModel = new ChatMistralAI({
