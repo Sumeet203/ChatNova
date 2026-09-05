@@ -1,11 +1,12 @@
 import { Server } from "socket.io";
+import { FRONTEND_URL } from "../config/config.js";
 
 let io;
 
 export function initSocket(httpServer){
     io = new Server(httpServer,{
         cors : {
-            origin : "https://chat-nova-virid.vercel.app",
+            origin : FRONTEND_URL,
             credentials : true
         }
     });

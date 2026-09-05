@@ -8,24 +8,24 @@ const geminiModel = new ChatGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY
 });
 const mistralModel = new ChatMistralAI({
-  model : "mistral-small-latest",
-  apiKey : process.env.MISTRAL_API_KEY
+  model: "voxtral-small-2507",
+  apiKey: process.env.MISTRAL_API_KEY
 })
 
 
-const searchTool =  tool(
-  searchInternet,{
-    name : "searchTool",
-    description : "Search the internet for current, recent, or up-to-date information before answering." ,
-    schema : zod.object({
-      query : zod.string().describe("The search query to look up on the internet.")
-    })
-  }
+const searchTool = tool(
+  searchInternet, {
+  name: "searchTool",
+  description: "Search the internet for current, recent, or up-to-date information before answering.",
+  schema: zod.object({
+    query: zod.string().describe("The search query to look up on the internet.")
+  })
+}
 );
 
 const agent = createAgent({
-  model : geminiModel,
-  tools : [searchTool]
+  model: geminiModel,
+  tools: [searchTool]
 })
 
 function needsFreshInformation(messages) {
@@ -59,18 +59,18 @@ async function getFreshContext(messages) {
   }
 }
 
-export async function generateResponse(messages){
+export async function generateResponse(messages) {
   const webSearchResults = await getFreshContext(messages);
   const response = await agent.invoke({
-    messages : [new SystemMessage(systemPrompt(webSearchResults)),...(messages.map(msg =>{
-    if(msg.role === "user"){
-      return new HumanMessage(msg.content);
-    }else if(msg.role === "ai"){
-      return new AIMessage(msg.content);
-    }
-  }))]
+    messages: [new SystemMessage(systemPrompt(webSearchResults)), ...(messages.map(msg => {
+      if (msg.role === "user") {
+        return new HumanMessage(msg.content);
+      } else if (msg.role === "ai") {
+        return new AIMessage(msg.content);
+      }
+    }))]
   });
-  return response.messages[response.messages.length-1].text;
+  return response.messages[response.messages.length - 1].text;
 }
 
 // Uses Gemini's native token stream through the LangChain agent.  The agent is
@@ -102,12 +102,12 @@ export async function* generateResponseStream(messages, signal) {
   }
 }
 
-export async function generateChatTitle(message){
+export async function generateChatTitle(message) {
   const response = await mistralModel.invoke([
     new SystemMessage(`
       You are a helpful assistant that generates concise and descriptive titles for chat conversation.
       User will provide you with the first message of a chat conversation, and you will generate a title that captures the essence of the conversation in 2-4 words. the title should be clear, relevant and engaging giving users a quick understanding of the chat's topic`),
-      new HumanMessage(`
+    new HumanMessage(`
         Generate a title for a chat conversation based on the following first message : "${message}"`)
   ]);
   return response.text;

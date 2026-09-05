@@ -7,7 +7,7 @@ function sendStreamEvent(res, event, data) {
 
 export async function getChats(req,res){
     const user = req.user;
-    const chats = await chatModel.find({user:user.id});
+    const chats = await chatModel.find({user:user.id}).sort({ updatedAt: -1, createdAt: -1 });
     res.status(200).json({
         message : "Chats retrieved successfully",
         chats
@@ -97,6 +97,8 @@ export async function sendMessage(req,res){
         }
 
         const activeChatId = chat._id;
+        chat.updatedAt = new Date();
+        await chat.save();
         await messageModel.create({ chat: activeChatId, content: message, role: "user" });
         const messages = await messageModel.find({ chat: activeChatId }).sort({ createdAt: 1 });
 

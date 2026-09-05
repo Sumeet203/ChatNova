@@ -1,7 +1,8 @@
-import { io } from "socket.io-client"
+import { io } from "socket.io-client";
+import { API_BASE_URL } from "../../../config/config";
 
 export const initializeSocketConnection = ()=>{
-    const socket = io("https://chatnova-dshx.onrender.com",{
+    const socket = io(API_BASE_URL,{
         withCredentials: true
     });
     socket.on("connect",()=>{
