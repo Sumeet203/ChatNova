@@ -323,7 +323,7 @@ const Dashboard = () => {
           {/* Messages Stream Container - Hidden Scrollbar with Smooth Scroll */}
           <div
             ref={messagesContainerRef}
-            className="flex-1 space-y-6 overflow-y-auto overflow-x-hidden p-4 md:p-6 pb-28 md:pb-32 no-scrollbar max-w-3xl mx-auto w-full"
+            className="select-text flex-1 space-y-6 overflow-y-auto overflow-x-hidden p-4 md:p-6 pb-28 md:pb-32 no-scrollbar max-w-3xl mx-auto w-full"
           >
             {/* EMPTY STATE */}
             {isEmptyChat && (
@@ -360,7 +360,9 @@ const Dashboard = () => {
             )}
 
             {/* Conversation Messages */}
-            {chats[currentChatId]?.messages?.map((message) => (
+            {chats[currentChatId]?.messages
+              ?.filter((message) => message.role === "user" || message.content?.length > 0)
+              ?.map((message) => (
               <div
                 key={message.id}
                 className={`flex gap-3 max-w-full overflow-hidden animate-fadeIn ${
@@ -390,12 +392,12 @@ const Dashboard = () => {
                 >
                   {message.role === "user" ? (
                     /* User Message: Indigo Bubble */
-                    <div className="rounded-2xl rounded-tr-xs bg-indigo-600 text-white px-4 py-3 text-xs md:text-sm leading-relaxed max-w-full overflow-hidden break-words shadow-xs">
-                      <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                    <div className="select-text rounded-2xl rounded-tr-xs bg-indigo-600 text-white px-4 py-3 text-xs md:text-sm leading-relaxed max-w-full overflow-hidden break-words shadow-xs">
+                      <p className="select-text whitespace-pre-wrap break-words">{message.content}</p>
                     </div>
                   ) : (
                     /* AI Response: Lumina Minimalist Canvas */
-                    <div className="w-full text-xs md:text-sm leading-relaxed text-slate-800 dark:text-slate-200 break-words max-w-full overflow-hidden border-b border-slate-200/50 dark:border-slate-800/60 pb-4">
+                    <div className="select-text w-full text-xs md:text-sm leading-relaxed text-slate-800 dark:text-slate-200 break-words max-w-full overflow-hidden border-b border-slate-200/50 dark:border-slate-800/60 pb-4">
                       <ReactMarkdown
                         components={{
                           p: ({ children }) => (

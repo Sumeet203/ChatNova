@@ -1,6 +1,6 @@
 import { initializeSocketConnection } from "../service/chat.socket";
 import { sendMessageStream, getChats, getMessages, deleteChat } from "../service/chat.api";
-import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, appendToMessage, addMessages, setStreaming, setHasReceivedFirstChunk } from "../chat.slice";
+import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, appendToMessage, addMessages, setStreaming, setHasReceivedFirstChunk, replaceTempChatId } from "../chat.slice";
 import { useDispatch } from "react-redux";
 import { useRef } from "react";
 
@@ -21,21 +21,33 @@ export const useChat = () => {
         dispatch(setError(null));
 
         let activeChatId = chatId;
+        let isTempChat = false;
         const assistantMessageId = crypto.randomUUID();
+
+        // Optimistic UI Update: Create chat & user message immediately before network request
+        if (!activeChatId) {
+            isTempChat = true;
+            activeChatId = `temp-${crypto.randomUUID()}`;
+            const optimisticTitle = message.length > 30 ? `${message.slice(0, 30)}...` : message;
+            dispatch(createNewChat({ chatId: activeChatId, title: optimisticTitle }));
+            dispatch(setCurrentChatId(activeChatId));
+        }
+
+        dispatch(addNewMessage({ chatId: activeChatId, content: message, role: "user", id: crypto.randomUUID() }));
+        dispatch(addNewMessage({ chatId: activeChatId, content: "", role: "ai", id: assistantMessageId }));
+
         try {
             await sendMessageStream({
                 message,
-                chatId,
+                chatId: isTempChat ? null : chatId,
                 signal: controller.signal,
                 onEvent: (event, data) => {
                     if (event === "init") {
-                        activeChatId = data.chatId;
-                        if (data.chat) {
-                            dispatch(createNewChat({ chatId: activeChatId, title: data.title }));
+                        const realChatId = data.chatId;
+                        if (isTempChat) {
+                            dispatch(replaceTempChatId({ tempChatId: activeChatId, realChatId, title: data.title }));
+                            activeChatId = realChatId;
                         }
-                        dispatch(addNewMessage({ chatId: activeChatId, content: message, role: "user", id: crypto.randomUUID() }));
-                        dispatch(addNewMessage({ chatId: activeChatId, content: "", role: "ai", id: assistantMessageId }));
-                        dispatch(setCurrentChatId(activeChatId));
                     }
                     if (event === "chunk") {
                         dispatch(setHasReceivedFirstChunk(true));

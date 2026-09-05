@@ -79,11 +79,9 @@ body {
   caret-color: #f8fafc;
 }
 
-/* Keep display-only UI text from showing the browser's text cursor. */
-.dashboard-ui,
-.dashboard-ui * {
+/* Keep display-only UI buttons and headers from showing text cursor. */
+.dashboard-ui {
   cursor: default;
-  user-select: none;
 }
 
 .dashboard-ui :is(button, a, [role="button"], label[for], .cursor-pointer),
@@ -91,10 +89,11 @@ body {
   cursor: pointer;
 }
 
-/* Text fields remain selectable and retain their expected input cursor. */
-.dashboard-ui :is(input, textarea, [contenteditable="true"]) {
+/* Allow users to highlight, select, and manually copy chat messages, AI responses, markdown text, and code blocks */
+.dashboard-ui :is(input, textarea, [contenteditable="true"], .select-text, .select-text *, p, pre, code, ul, ol, li, blockquote) {
   cursor: text;
-  user-select: text;
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
 
 /* Monospace font utility for code */
