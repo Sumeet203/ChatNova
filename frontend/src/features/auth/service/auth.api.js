@@ -1,8 +1,4 @@
-import axios from 'axios'
-const api = axios.create({
-    baseURL : "https://chatnova-dshx.onrender.com",
-    withCredentials : true, 
-});
+import { api } from "../../../config/config";
 export async function registerUser({email,username,password}) {
     const response = await api.post('/api/auth/register',{email,username,password});
     return response.data;

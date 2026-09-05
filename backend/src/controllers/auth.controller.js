@@ -1,6 +1,7 @@
 import userModel from "../models/user.model.js";
 import jwt from 'jsonwebtoken';
 import { sendEmail } from "../services/mail.service.js";
+import { BACKEND_URL, FRONTEND_URL } from "../config/config.js";
 
 const isProduction = process.env.NODE_ENV === "production";
 const authCookieOptions = {
@@ -98,7 +99,7 @@ export async function register(req,res){
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailVerificationToken}"
+                    <a href="${BACKEND_URL}/api/auth/verify-email?token=${emailVerificationToken}"
                       style="background: linear-gradient(135deg, #4f46e5, #9333ea); 
                              color:#ffffff; 
                              text-decoration:none; 
@@ -117,7 +118,7 @@ export async function register(req,res){
               </p>
 
               <p style="font-size:13px; color:#4f46e5; word-break:break-all;">
-                ${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailVerificationToken}
+                ${BACKEND_URL}/api/auth/verify-email?token=${emailVerificationToken}
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
@@ -255,7 +256,7 @@ export async function verifyEmail(req,res){
     user.verified = true;
     await user.save();
   }
-  return res.redirect(`${process.env.FRONTEND_URL || "https://chat-nova-virid.vercel.app"}/verify-email?status=success`);
+  return res.redirect(`${FRONTEND_URL}/verify-email?status=success`);
   } catch (error) {
     return res.status(400).json({
       message : "Invalid or expired token",
@@ -372,7 +373,7 @@ export async function resendEmailVerificationLink(req,res){
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:30px 0;">
                 <tr>
                   <td align="center">
-                    <a href="${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailverificationToken}"
+                    <a href="${BACKEND_URL}/api/auth/verify-email?token=${emailverificationToken}"
                       style="background: linear-gradient(135deg, #4f46e5, #9333ea); 
                              color:#ffffff; 
                              text-decoration:none; 
@@ -391,7 +392,7 @@ export async function resendEmailVerificationLink(req,res){
               </p>
 
               <p style="font-size:13px; color:#4f46e5; word-break:break-all;">
-                ${process.env.BACKEND_URL || "https://chatnova-dshx.onrender.com"}/api/auth/verify-email?token=${emailverificationToken}
+                ${BACKEND_URL}/api/auth/verify-email?token=${emailverificationToken}
               </p>
 
               <p style="font-size:14px; color:#666; margin-top:20px;">
